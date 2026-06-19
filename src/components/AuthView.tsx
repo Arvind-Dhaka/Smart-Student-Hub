@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../lib/AuthContext.tsx';
-import { LogIn, UserPlus } from 'lucide-react';
+import { LogIn, UserPlus, Search, Check, AlertCircle } from 'lucide-react';
 import { LandingPage } from './LandingPage.tsx';
 
 export function AuthView() {
@@ -13,9 +13,41 @@ export function AuthView() {
   const [graduationYear, setGraduationYear] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [department, setDepartment] = useState('');
+  
+  const [rollNumber, setRollNumber] = useState('');
+  const [searchingRoll, setSearchingRoll] = useState(false);
+  const [rollVerified, setRollVerified] = useState<boolean | null>(null);
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleLookupRoll = async () => {
+    if (!rollNumber) return;
+    setSearchingRoll(true);
+    setRollVerified(null);
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch(`/api/auth/lookup-roll?rollNumber=${encodeURIComponent(rollNumber.trim().toUpperCase())}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.record) {
+          setName(data.record.name);
+          setBranch(data.record.branch);
+          setGraduationYear(String(data.record.graduationYear));
+          setRollVerified(true);
+        }
+      } else {
+        setRollVerified(false);
+      }
+    } catch (e) {
+      console.error(e);
+      setRollVerified(false);
+    } finally {
+      setSearchingRoll(false);
+    }
+  };
 
   // If user is NOT logged into Firebase, show Google Login only
   if (!user) {
@@ -30,7 +62,7 @@ export function AuthView() {
 
     try {
       if (role === 'STUDENT') {
-        await completeRegistration(role, { name, branch, graduationYear, phoneNumber });
+        await completeRegistration(role, { name, branch, graduationYear, phoneNumber, rollNumber });
       } else {
         await completeRegistration(role, { name, department });
       }
@@ -77,6 +109,48 @@ export function AuthView() {
 
           {role === 'STUDENT' && (
              <>
+               <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/60 mb-4 space-y-3">
+                 <label className="block text-sm font-semibold text-indigo-900">University Roll Number</label>
+                 <div className="flex space-x-2">
+                   <div className="relative flex-1">
+                     <input 
+                       type="text" 
+                       value={rollNumber} 
+                       onChange={e => setRollNumber(e.target.value)} 
+                       className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium uppercase placeholder-slate-400" 
+                       placeholder="e.g. 2024UBT1002" 
+                     />
+                   </div>
+                   <button
+                     type="button"
+                     disabled={searchingRoll || !rollNumber}
+                     onClick={handleLookupRoll}
+                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center justify-center space-x-1.5 transition-colors disabled:opacity-50"
+                   >
+                     {searchingRoll ? (
+                       <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                     ) : (
+                       <Search className="w-4 h-4" />
+                     )}
+                     <span>Verify</span>
+                   </button>
+                 </div>
+                 
+                 {rollVerified === true && (
+                   <div className="flex items-center space-x-1.5 text-xs text-green-700 font-semibold bg-green-50 border border-green-100 p-2 rounded-lg">
+                     <Check className="w-4 h-4 shrink-0 text-green-600" />
+                     <span>Verified Gazette Record Found! Auto-filled profile.</span>
+                   </div>
+                 )}
+
+                 {rollVerified === false && (
+                   <div className="flex items-start space-x-1.5 text-xs text-amber-700 font-medium bg-amber-50 border border-amber-100 p-2 rounded-lg">
+                     <AlertCircle className="w-4.5 h-4.5 shrink-0 text-amber-600 mt-0.5" />
+                     <span>Not found in gazette records. You can still fill name/branch manually.</span>
+                   </div>
+                 )}
+               </div>
+
                <div>
                  <label className="block text-sm font-medium text-gray-700 mb-1">Branch</label>
                  <input required type="text" value={branch} onChange={e => setBranch(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm" placeholder="Computer Science" />

@@ -134,14 +134,30 @@ export function Dashboard() {
     { label: 'Total Activities', value: activities.length, icon: Award, color: 'text-indigo-600', bg: 'bg-indigo-50' },
     { label: 'Verified Credits', value: activities.filter(a => a.status === 'APPROVED').length * 2, icon: FileCheck, color: 'text-green-600', bg: 'bg-green-50' },
     { label: 'Pending Approval', value: activities.filter(a => a.status === 'PENDING').length, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'Official CGPA', value: dbUser?.cgpa ? dbUser.cgpa.toFixed(2) : 'N/A', icon: GraduationCap, color: 'text-violet-600', bg: 'bg-violet-50' },
   ];
 
-  const chartData = [
-    { name: 'Sem 1', gpa: 8.5 },
-    { name: 'Sem 2', gpa: 9.1 },
-    { name: 'Sem 3', gpa: 8.8 },
-    { name: 'Sem 4', gpa: 9.3 },
+  let chartData = [
+    { name: 'Sem 1', gpa: 0 },
+    { name: 'Sem 2', gpa: 0 },
+    { name: 'Sem 3', gpa: 0 },
+    { name: 'Sem 4', gpa: 0 },
   ];
+
+  if (dbUser?.sgpaRecords) {
+    try {
+      const parsed = JSON.parse(dbUser.sgpaRecords);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        chartData = parsed.map((item: any) => ({
+          name: item.sem,
+          gpa: item.gpa
+        }));
+        chartData.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+      }
+    } catch (e) {
+      console.error("Error parsing sgpaRecords:", e);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -183,7 +199,7 @@ export function Dashboard() {
         {activeTab === 'overview' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
             {/* Stats Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {stats.map((stat, i) => {
                 const Icon = stat.icon;
                 return (

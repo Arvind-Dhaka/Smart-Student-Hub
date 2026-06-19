@@ -3,7 +3,7 @@ node_modules/
 /dist
 /build
 /out
-
+/scratch
 # Logs
 *.log
 npm-debug.log*
@@ -42,3 +42,4 @@ Desktop.ini
 *.bak
 *.swp
 *.tmp
+

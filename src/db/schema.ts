@@ -21,6 +21,19 @@ export const students = pgTable('students', {
   branch: text('branch').notNull(),
   graduationYear: integer('graduation_year').notNull(),
   phoneNumber: text('phone_number'),
+  rollNumber: text('roll_number').unique(),
+  cgpa: doublePrecision('cgpa'),
+  sgpaRecords: text('sgpa_records'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const gazetteRecords = pgTable('gazette_records', {
+  rollNumber: text('roll_number').primaryKey(),
+  name: text('name').notNull(),
+  branch: text('branch').notNull(),
+  graduationYear: integer('graduation_year').notNull(),
+  cgpa: doublePrecision('cgpa'),
+  sgpaRecords: text('sgpa_records'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 

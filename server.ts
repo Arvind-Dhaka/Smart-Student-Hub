@@ -4,8 +4,8 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { requireAuth, AuthRequest } from "./src/middleware/auth.ts";
 import { db } from "./src/db/index.ts";
-import { students, faculties, activities } from "./src/db/schema.ts";
-import { eq, desc, ilike } from "drizzle-orm";
+import { students, faculties, activities, gazetteRecords } from "./src/db/schema.ts";
+import { eq, desc, ilike, or, inArray } from "drizzle-orm";
 
 async function startServer() {
   const app = express();
@@ -37,17 +37,57 @@ async function startServer() {
     }
   });
 
+  // Lookup roll number from gazette records
+  app.get("/api/auth/lookup-roll", requireAuth, async (req: AuthRequest, res) => {
+    try {
+      if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+      const rollNumber = req.query.rollNumber as string;
+      if (!rollNumber) return res.status(400).json({ error: "Roll number required" });
+      
+      const cleanRoll = rollNumber.trim().toUpperCase();
+      const records = await db.select().from(gazetteRecords).where(eq(gazetteRecords.rollNumber, cleanRoll)).limit(1);
+      
+      if (records.length === 0) {
+        return res.status(404).json({ error: "Roll number not found in gazette records" });
+      }
+      
+      res.json({ record: records[0] });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to query gazette records" });
+    }
+  });
+
   // Register
   app.post("/api/auth/register", requireAuth, async (req: AuthRequest, res) => {
     try {
       if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-      const { role, name, branch, graduationYear, phoneNumber, department } = req.body;
+      const { role, name, branch, graduationYear, phoneNumber, department, rollNumber } = req.body;
       const email = req.user.email || "";
 
       if (role === "STUDENT") {
+         let cgpa = null;
+         let sgpaRecords = null;
+         
+         if (rollNumber) {
+           const cleanRoll = rollNumber.trim().toUpperCase();
+           const match = await db.select().from(gazetteRecords).where(eq(gazetteRecords.rollNumber, cleanRoll)).limit(1);
+           if (match.length > 0) {
+             cgpa = match[0].cgpa;
+             sgpaRecords = match[0].sgpaRecords;
+           }
+         }
+
          const result = await db.insert(students).values({
            uid: req.user.uid,
-           email, name: name?.trim(), branch: branch?.trim(), graduationYear: parseInt(graduationYear, 10), phoneNumber: phoneNumber?.trim()
+           email, 
+           name: name?.trim(), 
+           branch: branch?.trim(), 
+           graduationYear: parseInt(graduationYear, 10), 
+           phoneNumber: phoneNumber?.trim(),
+           rollNumber: rollNumber?.trim().toUpperCase() || null,
+           cgpa,
+           sgpaRecords
          }).returning();
          return res.json({ profile: result[0], role: "STUDENT" });
       } else if (role === "FACULTY") {
@@ -122,6 +162,118 @@ async function startServer() {
     }
   });
 
+  // Helper to map department names to all valid B.Tech sub-branches
+  function getBranchesForDepartment(dept: string): string[] {
+    const norm = dept.toUpperCase().trim();
+    
+    // Computer Science & Engineering
+    if (
+      norm.includes("COMPUTER") || 
+      norm.includes("CSE") || 
+      norm.includes("CS")
+    ) {
+      return [
+        "COMPUTER SCIENCE AND ENGINEERING - COMPUTER SCIENCE AND ENGINEERING",
+        "COMPUTER SCIENCE AND ENGINEERING",
+        "Computer Science and Engineering",
+        "COMPUTER SCIENCE AND ENGINEERING (ARTIFICIAL INTELLIGENCE)",
+        "COMPUTER SCIENCE AND ENGINEERING - COMPUTER SCIENCE AND ENGINEERING (ARTIFICIAL INTELLIGENCE)",
+        "Computer Science and Engineering (Artificial Intelligence)",
+        "Computer Science and Engineering (Data Science)",
+        "Computer Science and Engineering (Mathematics and Computing)",
+        "COMPUTER SCIENCE AND ENGINEERING (EAST) - COMPUTER SCIENCE AND ENGINEERING (INTERNET OF THINGS)",
+        "COMPUTER SCIENCE AND ENGINEERING (EAST) - COMPUTER SCIENCE AND ENGINEERING (BIG DATA ANALYTICS)"
+      ];
+    }
+    
+    // Information Technology
+    if (
+      norm.includes("INFORMATION TECHNOLOGY") || 
+      norm.includes("IT")
+    ) {
+      return [
+        "Information Technology Engineering",
+        "INFORMATION TECHNOLOGY - INFORMATION TECHNOLOGY (NETWORK AND INFORMATION SECURITY)"
+      ];
+    }
+
+    // Electronics & Communication
+    if (
+      norm.includes("ELECTRONICS") || 
+      norm.includes("COMMUNICATION") || 
+      norm.includes("ECE")
+    ) {
+      return [
+        "ELECTRONICS AND COMMUNICATION ENGINEERING",
+        "Electronics and Communication Engineering"
+      ];
+    }
+
+    // Electrical
+    if (
+      norm.includes("ELECTRICAL") || 
+      norm.includes("EE")
+    ) {
+      return [
+        "ELECTRICAL ENGINEERING",
+        "ELECTRICAL ENGINEERING - ELECTRICAL ENGINEERING"
+      ];
+    }
+
+    // Mechanical
+    if (
+      norm.includes("MECHANICAL") || 
+      norm.includes("ME")
+    ) {
+      return [
+        "MECHANICAL ENGINEERING",
+        "Mechanical Engineering",
+        "MECHANICAL ENGINEERING - MECHANICAL ENGINEERING",
+        "Mechanical Engineering - Mechanical Engineering",
+        "MECHANICAL ENGINEERING (ELECTRIC VEHICLES)",
+        "MECHANANICAL ENGINEERING (ELECTRIC VEHICLES)"
+      ];
+    }
+
+    // Civil
+    if (
+      norm.includes("CIVIL") || 
+      norm.includes("GEOINFORMATICS") || 
+      norm.includes("CE")
+    ) {
+      return [
+        "CIVIL ENGINEERING - CIVIL ENGINEERING",
+        "CIVIL ENGINEERING - GEOINFORMATICS",
+        "GEOINFORMATICS Engineering"
+      ];
+    }
+
+    // Instrumentation
+    if (
+      norm.includes("INSTRUMENTATION") || 
+      norm.includes("CONTROL") || 
+      norm.includes("ICE")
+    ) {
+      return [
+        "INSTRUMENTATION AND CONTROL ENGINEERING - INSTRUMENTATION AND CONTROL ENGINEERING",
+        "INSTRUMENTATION AND CONTROL ENGINEERING"
+      ];
+    }
+
+    // Biotechnology/Biological
+    if (
+      norm.includes("BIOLOGICAL") || 
+      norm.includes("BIO") || 
+      norm.includes("BSE")
+    ) {
+      return [
+        "BIOLOGICAL SCIENCES AND ENGINEERING - BIO TECHNOLOGY"
+      ];
+    }
+
+    return [dept];
+  }
+
   // Faculty specific: Get activities for department
   app.get("/api/faculty/activities", requireAuth, async (req: AuthRequest, res) => {
      try {
@@ -130,17 +282,25 @@ async function startServer() {
        if (facultyRes.length === 0) return res.status(404).json({ error: "Faculty not found" });
 
        const faculty = facultyRes[0];
-       // Join activities with students to filter by branch
+       const branches = getBranchesForDepartment(faculty.department);
+
+       // Join activities with students to filter by branch mapping or partial name
        const result = await db.select({
          activity: activities,
          student: students
        }).from(activities)
        .innerJoin(students, eq(activities.studentId, students.id))
-       .where(ilike(students.branch, faculty.department.trim()))
+       .where(
+         or(
+           inArray(students.branch, branches),
+           ilike(students.branch, `%${faculty.department.trim()}%`)
+         )
+       )
        .orderBy(desc(activities.createdAt));
 
        res.json({ data: result });
      } catch(e) {
+        console.error("Error in faculty activities query:", e);
         res.status(500).json({ error: "Failed to fetch faculty activities" });
      }
   });
