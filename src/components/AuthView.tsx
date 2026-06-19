@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../lib/AuthContext.tsx';
 import { LogIn, UserPlus } from 'lucide-react';
+import { LandingPage } from './LandingPage.tsx';
 
 export function AuthView() {
   const { user, loginWithGoogle, completeRegistration, logOut } = useAuth();
@@ -18,23 +19,7 @@ export function AuthView() {
 
   // If user is NOT logged into Firebase, show Google Login only
   if (!user) {
-    return (
-      <div className="flex h-screen w-full flex-col font-sans items-center justify-center bg-[#f9f9f9]">
-        <div className="max-w-md w-full px-8 py-10 bg-white shadow-xl shadow-gray-200/50 rounded-2xl border border-gray-100 text-center">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Smart Student Hub</h1>
-            <p className="text-gray-500 font-medium text-sm">Empowering Your Digital Portfolio</p>
-          </div>
-          <button
-            onClick={loginWithGoogle}
-            className="w-full flex items-center justify-center space-x-3 bg-gray-900 hover:bg-gray-800 text-white py-3 px-4 rounded-xl transition-all duration-200"
-          >
-            <LogIn className="w-5 h-5" />
-            <span className="font-semibold">Sign in with Google</span>
-          </button>
-        </div>
-      </div>
-    );
+    return <LandingPage loginWithGoogle={loginWithGoogle} />;
   }
 
   // If user IS logged into Firebase, but no profile (dbUser is null), show Registration
