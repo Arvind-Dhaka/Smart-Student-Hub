@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { 
-  LogIn, 
-  Award, 
-  BookOpen, 
-  GraduationCap, 
-  Clock, 
-  FileCheck, 
-  ArrowRight, 
-  Briefcase, 
-  TrendingUp, 
-  Sparkles, 
-  Users, 
-  ShieldCheck, 
+import {
+  LogIn,
+  Award,
+  BookOpen,
+  GraduationCap,
+  Clock,
+  FileCheck,
+  ArrowRight,
+  Briefcase,
+  TrendingUp,
+  Sparkles,
+  Users,
+  ShieldCheck,
   FileText,
   CheckCircle2,
   XCircle,
@@ -30,7 +30,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-500 selection:text-white overflow-x-hidden">
-      
+
       {/* Background decoration */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-20%] left-[-10%] w-[50%] aspect-square rounded-full bg-indigo-200/30 blur-3xl" />
@@ -126,7 +126,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
       {/* Hero Section */}
       <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          
+
           {/* Left Column: Headline & Action */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             <div className="inline-flex items-center space-x-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase">
@@ -152,7 +152,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
                 className="w-full sm:w-auto flex items-center justify-center space-x-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/35 hover:-translate-y-0.5"
               >
                 <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.2-5.136 4.2A5.726 5.726 0 0 1 8.2 12.8a5.726 5.726 0 0 1 5.79-5.8 5.672 5.672 0 0 1 4.07 1.697l3.226-3.227A10.144 10.144 0 0 0 13.99 2C8.47 2 4 6.47 4 12s4.47 10 9.99 10c5.76 0 9.96-4.05 9.96-10 0-.68-.08-1.314-.21-1.715H12.24z"/>
+                  <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.2-5.136 4.2A5.726 5.726 0 0 1 8.2 12.8a5.726 5.726 0 0 1 5.79-5.8 5.672 5.672 0 0 1 4.07 1.697l3.226-3.227A10.144 10.144 0 0 0 13.99 2C8.47 2 4 6.47 4 12s4.47 10 9.99 10c5.76 0 9.96-4.05 9.96-10 0-.68-.08-1.314-.21-1.715H12.24z" />
                 </svg>
                 <span>Get Started with Google</span>
               </button>
@@ -187,7 +187,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
             <div className="relative bg-slate-900 rounded-3xl p-4 shadow-2xl border border-slate-800/80 aspect-[4/3] flex flex-col justify-between overflow-hidden">
               {/* Decorative light */}
               <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-              
+
               {/* Header inside mockup */}
               <div className="flex justify-between items-center pb-3 border-b border-slate-800">
                 <div className="flex items-center space-x-2">
@@ -289,7 +289,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
       {/* Challenges & Solution Section */}
       <section id="challenges" className="bg-slate-100/60 py-20 border-y border-slate-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <h2 className="text-base font-semibold text-indigo-600 uppercase tracking-wider">The Academic Dilemma</h2>
             <p className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
@@ -301,14 +301,14 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            
+
             {/* The Challenges Card */}
             <div className="bg-white rounded-2xl p-8 border border-slate-200/80 shadow-sm space-y-6">
               <div className="flex items-center space-x-3 text-red-600">
                 <XCircle className="w-7 h-7" />
                 <h3 className="text-xl font-bold text-slate-900">Traditional Scattered Records</h3>
               </div>
-              
+
               <ul className="space-y-4">
                 <li className="flex items-start space-x-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 shrink-0" />
@@ -374,7 +374,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0" />
                   <div>
                     <strong className="text-indigo-200 block text-sm font-semibold">Real-Time Performance Dashboard</strong>
-                    <span className="text-indigo-100/80 text-sm">Monitor credit calculations, attendance statistics, and academic marks.</span>
+                    <span className="text-indigo-100/80 text-sm">Monitor credit calculations and academic cgpa.</span>
                   </div>
                 </li>
               </ul>
@@ -387,7 +387,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
       {/* Key Features Section */}
       <section id="features" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <h2 className="text-base font-semibold text-indigo-600 uppercase tracking-wider">Features</h2>
             <p className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
@@ -399,7 +399,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            
+
             {/* Feature 1 */}
             <div className="group bg-slate-50 hover:bg-white rounded-2xl p-6 border border-slate-100 hover:border-indigo-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
               <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
@@ -407,7 +407,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
               </div>
               <h3 className="text-lg font-bold text-slate-900 mb-2">Dynamic Student Dashboard</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Stay updated in real time on your overall GPA, attendance statistics, and credit-based activity milestones from one clean layout.
+                Stay updated in real time on your overall GPA and credit-based activity milestones from one clean layout.
               </p>
             </div>
 
@@ -451,7 +451,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
       {/* Impact & Benefits Section */}
       <section id="impact" className="bg-slate-50 py-20 border-t border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <h2 className="text-base font-semibold text-indigo-600 uppercase tracking-wider">Impact & Benefits</h2>
             <p className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
@@ -463,7 +463,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            
+
             {/* Impact 1 */}
             <div className="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm hover:shadow-md transition-shadow flex flex-col space-y-4">
               <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
@@ -493,7 +493,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
       {/* FAQ Section */}
       <section id="faq" className="py-20 bg-white border-t border-slate-200/80">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center mb-12 space-y-4">
             <h2 className="text-base font-semibold text-indigo-600 uppercase tracking-wider">Frequently Asked Questions</h2>
             <p className="text-3xl font-bold text-slate-900 tracking-tight">Got Questions?</p>
@@ -545,7 +545,7 @@ export function LandingPage({ loginWithGoogle }: LandingPageProps) {
               className="flex items-center space-x-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-200 shadow-xl shadow-indigo-600/20 hover:-translate-y-1 hover:shadow-indigo-600/35"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.2-5.136 4.2A5.726 5.726 0 0 1 8.2 12.8a5.726 5.726 0 0 1 5.79-5.8 5.672 5.672 0 0 1 4.07 1.697l3.226-3.227A10.144 10.144 0 0 0 13.99 2C8.47 2 4 6.47 4 12s4.47 10 9.99 10c5.76 0 9.96-4.05 9.96-10 0-.68-.08-1.314-.21-1.715H12.24z"/>
+                <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.2-5.136 4.2A5.726 5.726 0 0 1 8.2 12.8a5.726 5.726 0 0 1 5.79-5.8 5.672 5.672 0 0 1 4.07 1.697l3.226-3.227A10.144 10.144 0 0 0 13.99 2C8.47 2 4 6.47 4 12s4.47 10 9.99 10c5.76 0 9.96-4.05 9.96-10 0-.68-.08-1.314-.21-1.715H12.24z" />
               </svg>
               <span>Sign in with Google</span>
             </button>
